@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Stagiaires</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background: #fff3e0;
+    margin: 0;
+    padding: 30px;
+}
+
+.container{
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    max-width: 900px;
+    margin: auto;
+    box-shadow: 0 10px 25px rgba(255,122,0,0.15);
+}
+
+h2{
+    text-align: center;
+    color: #ff7a00;
+    margin-bottom: 20px;
+}
+
+input{
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+input:focus{
+    border-color: #ff7a00;
+}
+
+button{
+    padding: 12px 15px;
+    margin: 6px 4px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:nth-of-type(1){ background: #ff7a00; color: white; }
+button:nth-of-type(2){ background: #ff9800; color: white; }
+button:nth-of-type(3){ background: #e74c3c; color: white; }
+
+ul{
+    list-style: none;
+    padding: 0;
+    margin-top: 25px;
+}
+
+li{
+    background: #fff7f0;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border-left: 6px solid #ff7a00;
+    cursor: pointer;
+}
+
+li.selected{
+    background: #ffe0b2;
+    border-left: 6px solid #ff9800;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Gestion des Stagiaires</h2>
+
+<input id="id" placeholder="ID" type="number">
+<input id="nom" placeholder="Nom">
+<input id="prenom" placeholder="Prenom">
+<input id="age" placeholder="Age">
+<input id="filiere" placeholder="Filiere">
+<input id="groupe" placeholder="Groupe">
+
+<br>
+
+<button onclick="add()">Ajouter</button>
+<button onclick="update()">Modifier</button>
+<button onclick="remove()">Supprimer</button>
+
+<ul id="list"></ul>
+
+</div>
+
+<script>
+
+const url = "http://localhost:3000/stagiaires";
+
+let selectedId = null;
+let selectedLi = null;
+
+function Stagiaire(id, nom, prenom, age, filiere, groupe){
+    this.id = id;
+    this.nom = nom;
+    this.prenom = prenom;
+    this.age = age;
+    this.filiere = filiere;
+    this.groupe = groupe;
+}
+
+function getData(){
+fetch(url)
+.then(r=>r.json())
+.then(data=>{
+
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.forEach(s=>{
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <b>ID:</b> ${s.id}<br>
+            <b>Nom:</b> ${s.nom} ${s.prenom}<br>
+            <b>Age:</b> ${s.age}<br>
+            <b>Filiere:</b> ${s.filiere}<br>
+            <b>Groupe:</b> ${s.groupe}
+        `;
+
+        li.onclick = () => selectRow(s, li);
+
+        list.appendChild(li);
+    });
+
+});
+}
+
+function selectRow(s, li){
+
+if(selectedLi){
+    selectedLi.classList.remove("selected");
+}
+
+selectedId = Number(s.id);
+selectedLi = li;
+
+li.classList.add("selected");
+
+id.value = s.id;
+nom.value = s.nom;
+prenom.value = s.prenom;
+age.value = s.age;
+filiere.value = s.filiere;
+groupe.value = s.groupe;
+}
+
+/* =========================
+   USING CONSTRUCTOR HERE
+========================= */
+function getForm(){
+
+if(isNaN(id.value) || id.value === ""){
+    alert("ID must be a number");
+    return null;
+}
+
+return new Stagiaire(
+    Number(id.value),
+    nom.value,
+    prenom.value,
+    age.value,
+    filiere.value,
+    groupe.value
+);
+}
+
+function add(){
+const data = getForm();
+if(!data) return;
+
+fetch(url,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+})
+.then(()=>getData());
+}
+
+function update(){
+if(selectedId === null){
+    alert("Select a row first");
+    return;
+}
+
+const data = getForm();
+if(!data) return;
+
+fetch(`${url}/${selectedId}`,{
+method:"PUT",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+})
+.then(()=>{
+    clearAll();
+    getData();
+});
+}
+
+function remove(){
+if(selectedId === null){
+    alert("Select a row first");
+    return;
+}
+
+fetch(`${url}/${selectedId}`,{
+method:"DELETE"
+})
+.then(()=>{
+    clearAll();
+    getData();
+});
+}
+
+function clearAll(){
+
+if(selectedLi){
+    selectedLi.classList.remove("selected");
+}
+
+selectedId = null;
+selectedLi = null;
+
+id.value = "";
+nom.value = "";
+prenom.value = "";
+age.value = "";
+filiere.value = "";
+groupe.value = "";
+}
+
+getData();
+
+</script>
+
+</body>
+</html>

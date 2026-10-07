@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Formateurs</title>
+
+<style>
+body{
+    font-family: Arial;
+    background: #fff3e0;
+    padding: 30px;
+}
+
+.container{
+    background:white;
+    padding:30px;
+    border-radius:18px;
+    max-width:900px;
+    margin:auto;
+    box-shadow:0 10px 25px rgba(255,122,0,0.15);
+}
+
+h2{
+    text-align:center;
+    color:#ff7a00;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:6px 0;
+    border-radius:10px;
+    border:1px solid #ddd;
+}
+
+input:focus{
+    border-color:#ff7a00;
+    outline:none;
+}
+
+button{
+    padding:12px 15px;
+    margin:6px 4px;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:nth-of-type(1){ background:#ff7a00; color:white; }
+button:nth-of-type(2){ background:#ff9800; color:white; }
+button:nth-of-type(3){ background:#e74c3c; color:white; }
+
+ul{
+    list-style:none;
+    padding:0;
+    margin-top:25px;
+}
+
+li{
+    background:#fff5eb;
+    padding:15px;
+    margin:10px 0;
+    border-radius:12px;
+    border-left:6px solid #ff7a00;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+li:hover{
+    transform:scale(1.01);
+}
+
+li.selected{
+    background:#ffe0b2;
+    border-left:6px solid #ff9800;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Formateurs</h2>
+
+<input id="id" placeholder="ID" type="number">
+<input id="nom" placeholder="Nom">
+<input id="prenom" placeholder="Prenom">
+<input id="age" placeholder="Age">
+<input id="specialite" placeholder="Specialite">
+<input id="email" placeholder="Email">
+
+<br>
+
+<button onclick="add()">Ajouter</button>
+<button onclick="update()">Modifier</button>
+<button onclick="remove()">Supprimer</button>
+
+<ul id="list"></ul>
+
+</div>
+
+<script>
+
+const url = "http://localhost:3000/formateurs";
+
+let selectedId = null;
+let selectedLi = null;
+
+function Formateur(id, nom, prenom, age, specialite, email){
+    this.id = id;
+    this.nom = nom;
+    this.prenom = prenom;
+    this.age = age;
+    this.specialite = specialite;
+    this.email = email;
+}
+
+function getData(){
+fetch(url)
+.then(r=>r.json())
+.then(data=>{
+
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.forEach(f=>{
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <b>ID:</b> ${f.id}<br>
+            <b>Nom:</b> ${f.nom} ${f.prenom}<br>
+            <b>Age:</b> ${f.age}<br>
+            <b>Specialite:</b> ${f.specialite}<br>
+            <b>Email:</b> ${f.email}
+        `;
+
+        li.onclick = () => selectRow(f, li);
+
+        list.appendChild(li);
+    });
+
+});
+}
+
+function selectRow(f, li){
+
+if(selectedLi){
+    selectedLi.classList.remove("selected");
+}
+
+selectedId = Number(f.id);
+selectedLi = li;
+
+li.classList.add("selected");
+
+id.value = f.id;
+nom.value = f.nom;
+prenom.value = f.prenom;
+age.value = f.age;
+specialite.value = f.specialite;
+email.value = f.email;
+}
+
+function getForm(){
+
+if(isNaN(id.value) || id.value === ""){
+    alert("ID must be a number");
+    return null;
+}
+
+return new Formateur(
+    Number(id.value),
+    nom.value,
+    prenom.value,
+    age.value,
+    specialite.value,
+    email.value
+);
+}
+
+function add(){
+const data = getForm();
+if(!data) return;
+
+fetch(url,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+})
+.then(()=>getData());
+}
+
+function update(){
+if(selectedId === null){
+    alert("Select a row first");
+    return;
+}
+
+const data = getForm();
+if(!data) return;
+
+fetch(`${url}/${selectedId}`,{
+method:"PUT",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+})
+.then(()=>{
+    clearAll();
+    getData();
+});
+}
+
+function remove(){
+if(selectedId === null){
+    alert("Select a row first");
+    return;
+}
+
+fetch(`${url}/${selectedId}`,{
+method:"DELETE"
+})
+.then(()=>{
+    clearAll();
+    getData();
+});
+}
+
+function clearAll(){
+
+if(selectedLi){
+    selectedLi.classList.remove("selected");
+}
+
+selectedId = null;
+selectedLi = null;
+
+id.value = "";
+nom.value = "";
+prenom.value = "";
+age.value = "";
+specialite.value = "";
+email.value = "";
+}
+
+getData();
+
+</script>
+
+</body>
+</html>

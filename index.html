@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 55px;
+            border-radius: 28px;
+            width: 420px;
+            text-align: center;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.15),
+                0 8px 25px rgba(255, 122, 0, 0.15);
+
+            border: 1px solid rgba(255, 122, 0, 0.08);
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #ff7a00;
+            font-size: 36px;
+        }
+
+        .btn {
+            display: block;
+            text-decoration: none;
+
+            background: linear-gradient(135deg, #ff7a00, #ff9500);
+
+            color: white;
+            padding: 16px;
+            margin: 18px 0;
+
+            border-radius: 14px;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            transition: 0.3s ease;
+
+            box-shadow: 0 10px 25px rgba(255, 122, 0, 0.35);
+
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #e56700, #ff7a00);
+
+            transform: translateY(-5px) scale(1.02);
+
+            box-shadow: 0 15px 30px rgba(255, 122, 0, 0.45);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Application</h1>
+
+        <a class="btn" href="stagiaires.html">
+            Gestion Stagiaires
+        </a>
+
+        <a class="btn" href="formateurs.html">
+            Gestion Formateurs
+        </a>
+
+    </div>
+
+</body>
+</html>
